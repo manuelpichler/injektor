@@ -712,7 +712,11 @@ class DependencyInjectionContainer {
             return $argumentConfig['value'];
         }
         if (isset($argumentConfig['class'])) {
-            return $this->getInstanceOfClass($argumentConfig['class']);
+            $constructorArguments = array();
+            if (isset($argumentConfig['params'])) {
+                $constructorArguments = $argumentConfig['params'];
+            }
+            return $this->getInstanceOfClass($argumentConfig['class'], $constructorArguments);
         }
         return $argumentConfig;
     }
