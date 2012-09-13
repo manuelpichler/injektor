@@ -118,13 +118,22 @@ class InjectionParameter {
             if ($argumentClass === 'rg\injektor\DependencyInjectionContainer') {
                 $this->defaultValue =  '\\' . $argumentClass . '::getDefaultInstance()';
             } else {
+
+                $additionalArguments = $this->additionalArguments;
+                if (isset($this->classConfig['params'][$this->name]['params'])) {
+                    $additionalArguments = array_merge(
+                        $additionalArguments,
+                        $this->classConfig['params'][$this->name]['params']
+                    );
+                }
+
                 $providerClassName = $this->dic->getProviderClassName($this->config->getClassConfig($argumentClass), new \ReflectionClass($argumentClass),
                     $this->dic->getImplementationName($this->docComment, $this->nameForAnnotationParsing));
                 if ($providerClassName && $providerClassName->getClassName()) {
                     $argumentFactory = $this->dic->getFullFactoryClassName($providerClassName->getClassName());
                     $this->className = $providerClassName->getClassName();
                     $this->factoryName = $argumentFactory;
-                    $this->defaultValue = '\\' . $argumentFactory . '::getInstance(' . var_export(array_merge($providerClassName->getParameters(), $this->additionalArguments), true) . ')->get()';
+                    $this->defaultValue = '\\' . $argumentFactory . '::getInstance(' . var_export(array_merge($providerClassName->getParameters(), $additionalArguments), true) . ')->get()';
                 } else {
                     $argumentClass = $this->dic->getRealConfiguredClassName($this->config->getClassConfig($argumentClass), new \ReflectionClass($argumentClass));
 
@@ -139,7 +148,7 @@ class InjectionParameter {
                     $this->className = $argumentClass;
                     $this->factoryName = $argumentFactory;
 
-                    $this->defaultValue = '\\' . $argumentFactory . '::getInstance(' . var_export($this->additionalArguments, true) . ')';
+                    $this->defaultValue = '\\' . $argumentFactory . '::getInstance(' . var_export($additionalArguments, true) . ')';
                 }
             }
 
