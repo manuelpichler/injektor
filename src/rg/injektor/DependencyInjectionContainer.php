@@ -691,7 +691,7 @@ class DependencyInjectionContainer {
             } else if ($methodIsMarkedInjectible) {
                 $argumentValues[$argument->name] = $this->getInstanceOfArgument($argument);
             } else if ($argument->isOptional()) {
-                $argumentValues[$argument->name] = $argument->getDefaultValue();
+                $argumentValues[$argument->name] = $argument->isDefaultValueAvailable() ? $argument->getDefaultValue() : null;
             } else if (!$argument->isOptional()) {
                 throw new InjectionException('Parameter ' . $argument->name . ' in class ' . $methodReflection->class . ' is not injectable. Given fixed parameters: [' . implode("], [", array_keys($defaultArguments)) . ']');
             }
